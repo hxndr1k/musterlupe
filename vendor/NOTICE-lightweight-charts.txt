@@ -1,0 +1,7 @@
+TradingView Lightweight Charts(TM)
+Copyright (c) 2025 TradingView, Inc. https://www.tradingview.com/
+
+Version 4.2.3, Apache-Lizenz 2.0 (siehe LICENSE-lightweight-charts.txt).
+Quelle: https://github.com/tradingview/lightweight-charts
+
+Musterlupe nutzt nur diese Chart-Bibliothek. Die App gehoert nicht zu TradingView.

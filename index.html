@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Musterlupe: Chartmuster nach festen Regeln finden und ehrlich auswerten. Lernwerkzeug, keine Anlageberatung.">
+<meta name="robots" content="noindex">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Musterlupe">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0b1016">
+<link rel="apple-touch-icon" href="icon.png">
+<title>Musterlupe</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23111822'/%3E%3Ccircle cx='14' cy='14' r='8.5' fill='none' stroke='%238e9dff' stroke-width='2.4'/%3E%3Cpath d='M20.5 20.5 27 27' stroke='%238e9dff' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M14 8.5v11' stroke='%2336c597' stroke-width='1.6' stroke-linecap='round'/%3E%3Crect x='11.6' y='11' width='4.8' height='6' rx='1' fill='%2336c597'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="kopf">
+  <div class="marke" aria-label="Musterlupe">
+    <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true">
+      <rect width="32" height="32" rx="7" fill="#172130"/>
+      <circle cx="14" cy="14" r="8.5" fill="none" stroke="#8e9dff" stroke-width="2.4"/>
+      <path d="M20.5 20.5 27 27" stroke="#8e9dff" stroke-width="3" stroke-linecap="round"/>
+      <path d="M14 8.5v11" stroke="#36c597" stroke-width="1.6" stroke-linecap="round"/>
+      <rect x="11.6" y="11" width="4.8" height="6" rx="1" fill="#36c597"/>
+    </svg>
+    <span>Muster<b>lupe</b></span>
+  </div>
+
+  <div class="gruppe">
+    <label class="leise-label" for="markt">Markt</label>
+    <select id="markt" class="wahl"></select>
+    <button id="eigen-auf" class="knopf" type="button" title="Eigenes Kürzel eingeben, zum Beispiel DOGE oder PEPE">+ Kürzel</button>
+    <button id="eigen-weg" class="knopf" type="button" hidden title="Diesen eigenen Markt aus der Liste nehmen">Entfernen</button>
+  </div>
+
+  <div class="zeiten" id="zeiten" role="group" aria-label="Zeitabschnitt pro Kerze"></div>
+
+  <div class="status" id="status" title="">
+    <span class="punkt" id="status-punkt"></span>
+    <span id="status-text">Lade …</span>
+  </div>
+
+  <div class="kurs" id="kurs" aria-live="off"></div>
+</header>
+
+<div class="hinweis" role="note">
+  <b>Lernwerkzeug, keine Anlageberatung.</b> Vergangene Muster sagen nichts Sicheres über die Zukunft. Hier wird nichts gekauft oder verkauft.
+</div>
+
+<main class="haupt">
+  <section class="chartbereich" aria-label="Chart">
+    <div class="charttitel">
+      <div class="ct-name"><b id="ct-name">…</b> <span id="ct-kuerzel" class="leise"></span> <span id="ct-tf" class="marke-klein"></span></div>
+      <div class="ct-werte" id="ct-werte"></div>
+    </div>
+    <div class="chartrahmen">
+      <div id="chart"></div>
+      <div id="chart-meldung" class="chart-meldung" hidden></div>
+      <button id="zu-jetzt" class="knopf zu-jetzt" type="button" title="Zum aktuellen Kurs springen">Zum aktuellen Kurs ▸</button>
+    </div>
+    <div class="legende">
+      <span><i class="l-band"></i>Muster</span>
+      <span><i class="l-linie" style="--f:var(--akzent)"></i>Einstieg</span>
+      <span><i class="l-linie gestrichelt" style="--f:var(--bear)"></i>Stop</span>
+      <span><i class="l-linie gestrichelt" style="--f:var(--bull)"></i>Ziel</span>
+      <span class="l-trenner"></span>
+      <span><i class="l-pfeil" style="--f:var(--bull)">▲</i>funktioniert</span>
+      <span><i class="l-pfeil" style="--f:var(--bear)">▲</i>nicht funktioniert</span>
+      <span><i class="l-pfeil" style="--f:var(--grau)">▲</i>nie ausgelöst</span>
+      <span><i class="l-pfeil" style="--f:var(--warn)">▲</i>noch offen</span>
+      <span class="leise">Pfeil hoch = Kauf, Pfeil runter = Verkauf (Short)</span>
+    </div>
+    <div class="detail" id="detail"></div>
+  </section>
+
+  <aside class="seite" aria-label="Funde, Statistik und Regeln">
+    <div class="reiter" role="tablist">
+      <button role="tab" id="r-funde" aria-controls="p-funde" aria-selected="true" class="aktiv" type="button">Funde</button>
+      <button role="tab" id="r-statistik" aria-controls="p-statistik" aria-selected="false" type="button">Statistik</button>
+      <button role="tab" id="r-regeln" aria-controls="p-regeln" aria-selected="false" type="button">Regeln</button>
+    </div>
+
+    <div class="filterleiste">
+      <select id="f-muster" class="wahl" aria-label="Nach Muster filtern"></select>
+      <select id="f-markt" class="wahl" aria-label="Nach Markt filtern"></select>
+    </div>
+
+    <div class="tafel" id="p-funde" role="tabpanel" aria-labelledby="r-funde">
+      <div class="chips" id="f-ausgang" role="group" aria-label="Nach Ausgang filtern"></div>
+      <div class="liste" id="liste" tabindex="0" aria-label="Liste der Funde"></div>
+    </div>
+
+    <div class="tafel" id="p-statistik" role="tabpanel" aria-labelledby="r-statistik" hidden>
+      <div id="statistik"></div>
+    </div>
+
+    <div class="tafel" id="p-regeln" role="tabpanel" aria-labelledby="r-regeln" hidden>
+      <div id="regeln"></div>
+    </div>
+  </aside>
+</main>
+
+<footer class="fuss">
+  <span id="fuss-quelle"></span>
+  <span class="fuss-lizenz">Chart-Technik: TradingView Lightweight Charts™, Copyright © 2025 TradingView, Inc.,
+    <a href="https://www.tradingview.com/" target="_blank" rel="noopener noreferrer">tradingview.com</a>
+    (Apache-Lizenz 2.0). Musterlupe ist ein eigenes Lernwerkzeug und gehört nicht zu TradingView.</span>
+</footer>
+
+<dialog id="eigen-dialog" class="dialog">
+  <form method="dialog" id="eigen-form">
+    <h2>Eigenen Markt hinzufügen</h2>
+    <p class="leise">Tippe ein Krypto-Kürzel ein. Es läuft gegen USDT (aus DOGE wird DOGE/USDT). Aktien gibt es in der Web-Version noch nicht.</p>
+    <div class="dialog-zeile">
+      <label><input type="radio" name="art" value="krypto" checked> Krypto</label>
+    </div>
+    <input id="eigen-kuerzel" class="eingabe" type="text" autocomplete="off" spellcheck="false" maxlength="15" placeholder="zum Beispiel DOGE oder PEPE" aria-label="Kürzel">
+    <p id="eigen-fehler" class="fehlertext" role="alert"></p>
+    <div class="dialog-knoepfe">
+      <button type="button" class="knopf" id="eigen-abbruch">Abbrechen</button>
+      <button type="submit" class="knopf haupt-knopf" id="eigen-ok">Hinzufügen</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="vendor/lightweight-charts.standalone.production.js"></script>
+<script src="kern/muster.js"></script>
+<script src="kern/daten.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
