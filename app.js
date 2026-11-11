@@ -8,8 +8,8 @@ const LC = window.LightweightCharts;
 const $ = (s, wurzel = document) => wurzel.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 
-const FARBE = {bull: '#36c597', bear: '#f06b7d', akzent: '#8e9dff', warn: '#e3aa4c', grau: '#7d8a9c',
-               leise: '#8b98ab', gitter: '#18212d', rand: '#222d3b', bg: '#0b1016'};
+const FARBE = {bull: '#2fa37f', bear: '#d4505e', akzent: '#d9d9d9', warn: '#c9a04f', grau: '#7a7a7a',
+               leise: '#8f8f8f', gitter: '#121212', rand: '#262626', bg: '#000000'};
 const AUSGANG = {
   ziel: {kurz: 'Funktioniert', farbe: FARBE.bull},
   stop: {kurz: 'Nicht funktioniert', farbe: FARBE.bear},
@@ -76,8 +76,8 @@ function baueChart() {
              fontFamily: getComputedStyle(document.body).fontFamily, attributionLogo: false},
     grid: {vertLines: {color: FARBE.gitter}, horzLines: {color: FARBE.gitter}},
     crosshair: {mode: LC.CrosshairMode.Normal,
-                vertLine: {color: '#52627a', labelBackgroundColor: '#2a3748'},
-                horzLine: {color: '#52627a', labelBackgroundColor: '#2a3748'}},
+                vertLine: {color: '#5c5c5c', labelBackgroundColor: '#2a2a2a'},
+                horzLine: {color: '#5c5c5c', labelBackgroundColor: '#2a2a2a'}},
     rightPriceScale: {borderColor: FARBE.rand, scaleMargins: {top: 0.08, bottom: 0.24}},
     timeScale: {borderColor: FARBE.rand, timeVisible: true, secondsVisible: false, rightOffset: 8, minBarSpacing: 1.2,
                 tickMarkFormatter: achsenText},
@@ -94,14 +94,14 @@ function baueChart() {
 
   kerzenSerie = chart.addCandlestickSeries({
     upColor: FARBE.bull, downColor: FARBE.bear, borderUpColor: FARBE.bull, borderDownColor: FARBE.bear,
-    wickUpColor: FARBE.bull, wickDownColor: FARBE.bear, priceLineColor: '#5d6d85',
+    wickUpColor: FARBE.bull, wickDownColor: FARBE.bear, priceLineColor: '#5c5c5c',
   });
 
   const linie = (farbe, stil, titel, breite = 2) => chart.addLineSeries({
     color: farbe, lineWidth: breite, lineStyle: stil, title: titel,
     priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: false,
   });
-  hilfsLinien = [linie('#a7b2c3', LC.LineStyle.Dotted, '', 1), linie('#a7b2c3', LC.LineStyle.Dotted, '', 1)];
+  hilfsLinien = [linie('#a8a8a8', LC.LineStyle.Dotted, '', 1), linie('#a8a8a8', LC.LineStyle.Dotted, '', 1)];
   linien = {
     stop: linie(FARBE.bear, LC.LineStyle.Dashed, 'Stop'),
     ziel: linie(FARBE.bull, LC.LineStyle.Dashed, 'Ziel'),
@@ -184,7 +184,7 @@ function chartMeldung(text, mitKnopf) {
 }
 
 const kerzeFuerChart = k => ({time: k[0], open: k[1], high: k[2], low: k[3], close: k[4]});
-const volFuerChart = k => ({time: k[0], value: k[5], color: k[4] >= k[1] ? 'rgba(54,197,151,.38)' : 'rgba(240,107,125,.38)'});
+const volFuerChart = k => ({time: k[0], value: k[5], color: k[4] >= k[1] ? 'rgba(47,163,127,.38)' : 'rgba(212,80,94,.38)'});
 
 function setzeKerzen(d, neu) {
   Z.kerzen = d.kerzen;
@@ -428,7 +428,7 @@ function zeichneAuswahl() {
   if (a == null || b == null) { leeren(); zeigeDetail(f); return; }
   const letzter = Z.kerzen.length - 1;
 
-  bandSerie.setData(Z.kerzen.slice(a, b + 1).map(k => ({time: k[0], value: 1, color: 'rgba(142,157,255,.17)'})));
+  bandSerie.setData(Z.kerzen.slice(a, b + 1).map(k => ({time: k[0], value: 1, color: 'rgba(217,217,217,.17)'})));
 
   let bis = f.t_schluss != null ? Z.index.get(f.t_schluss)
     : f.ausgang === 'offen' ? letzter : b + Z.start.warte_kerzen;
